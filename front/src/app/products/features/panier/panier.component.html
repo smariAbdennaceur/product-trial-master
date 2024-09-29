@@ -1,0 +1,41 @@
+<div class="cart-container">
+  <h2>Votre Panier</h2>
+  <ul class="cart-list">
+    <li *ngFor="let item of cartItems; let i = index" class="cart-item">
+      <div class="item-row">
+        <div class="item-info">
+          <div class="item-name">{{ item.name }}</div>
+          <div class="item-description">{{ item.description }}</div>
+        </div>
+        <div class="item-quantity-controls">
+          <p-button
+            icon="pi pi-minus"
+            (onClick)="decreaseQuantity(item)"
+            severity="secondary"
+            class="quantity-button"
+          ></p-button>
+          <span class="quantity">{{ item.quantity || 1 }}</span>
+          <p-button
+            icon="pi pi-plus"
+            (onClick)="increaseQuantity(item)"
+            severity="success"
+            class="quantity-button"
+          ></p-button>
+        </div>
+        <div class="item-price">{{ item.price | currency: 'EUR' }}</div>
+        <div class="item-remove">
+          <p-button
+            icon="pi pi-times"
+            (onClick)="removeFromCart(item)"
+            severity="danger"
+            class="remove-button"
+          ></p-button>
+        </div>
+      </div>
+    </li>
+  </ul>
+  <div class="cart-total">
+    <p>Total Articles: {{ getTotalQuantity() }}</p>
+    <p>Total Prix: {{ getTotalPrice() | currency: 'EUR' }}</p>
+  </div>
+</div>

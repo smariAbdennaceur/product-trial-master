@@ -1,0 +1,58 @@
+<h1 class="text-center">Liste des produits</h1>
+
+<p-button label="Créer produit" (onClick)="onCreate()" class="block text-center"></p-button>
+
+<!-- Category Filter with "Tous" option -->
+<div class="category-filter">
+  <p-dropdown
+    [options]="categories"
+    [(ngModel)]="selectedCategory"
+    placeholder="Select Category"
+    (onChange)="filterProducts()"
+  ></p-dropdown>
+
+  <div class="search-container">
+    <input type="text" [(ngModel)]="searchQuery" (input)="filterProducts()" placeholder="Rechercher..." /> 
+  </div>
+</div>
+
+<p-progressSpinner *ngIf="isLoading" class="custom-spinner"></p-progressSpinner>
+
+<div *ngIf="!isLoading">
+  <p-dataView [value]="filteredProducts">
+    <ng-template pTemplate="list">
+      <div class="cards">
+        <ng-container *ngFor="let product of filteredProducts">
+          <p-card class="block mb-4 p-card-custom">
+            <span class="font-medium text-primary text-sm">{{ product.category }}</span>
+            <div class="text-lg font-bold text-primary mt-2">{{ product.name }}</div>
+            <p class="text-muted">{{ product.description }}</p>
+            <p class="price-tag">Prix : <strong>{{ product.price | currency:'EUR' }}</strong></p>
+            <p class="stock-status" 
+               [ngClass]="{'in-stock': product.inventoryStatus === 'INSTOCK', 'low-stock': product.inventoryStatus === 'LOWSTOCK', 'out-of-stock': product.inventoryStatus === 'OUTOFSTOCK'}">
+              État du stock : 
+              <span *ngIf="product.inventoryStatus === 'INSTOCK'" class="text-success">En stock</span>
+              <span *ngIf="product.inventoryStatus === 'LOWSTOCK'" class="text-warning">Stock faible</span>
+              <span *ngIf="product.inventoryStatus === 'OUTOFSTOCK'" class="text-danger">Rupture de stock</span>
+            </p>
+            <ng-template pTemplate="footer">
+              <div class="flex gap-3 mt-1">
+                <p-button label="" icon="pi pi-shopping-cart" severity="success" (onClick)="addProduit(product)"></p-button>
+                <p-button label="Modifier" icon="pi pi-pencil" severity="secondary" (onClick)="onUpdate(product)"></p-button>
+                <p-button label="Supprimer" icon="pi pi-trash" severity="danger" (onClick)="onDelete(product)"></p-button>
+              </div>
+            </ng-template>
+          </p-card>
+        </ng-container>
+      </div>
+    </ng-template>
+  </p-dataView>
+</div>
+
+<p-dialog [(visible)]="isDialogVisible" [style]="{ width: '50vw' }" header="Ajout/Edition produit">
+  <app-product-form
+    [product]="editedProduct()"
+    (save)="onSave($event)"
+    (cancel)="onCancel()"
+  ></app-product-form>
+</p-dialog>
