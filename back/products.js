@@ -23,87 +23,21 @@ const generateId = () => {
  * @swagger
  * /api/products:
  *   get:
- *     summary: Retrieve all products with pagination, search, and sorting
+ *     summary: Retrieve all products
  *     tags: [Products]
- *     parameters:
- *       - in: query
- *         name: page
- *         schema:
- *           type: integer
- *         description: The page number for pagination.
- *       - in: query
- *         name: limit
- *         schema:
- *           type: integer
- *         description: The number of items per page.
- *       - in: query
- *         name: search
- *         schema:
- *           type: string
- *         description: Search term for product name or description.
- *       - in: query
- *         name: sort
- *         schema:
- *           type: string
- *         description: The field to sort by (e.g., 'price', 'name').
- *       - in: query
- *         name: order
- *         schema:
- *           type: string
- *           enum: [asc, desc]
- *         description: The sort order (ascending or descending).
  *     responses:
  *       200:
- *         description: A list of products with pagination, search, and sorting.
+ *         description: A list of products.
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 products:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/Product'
- *                 totalItems:
- *                   type: integer
- *                 totalPages:
- *                   type: integer
- *                 currentPage:
- *                   type: integer
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Product'
  */
 router.get('/', (req, res) => {
   const products = readData();
-
-  // Pagination, search, and sorting options
-  const { page = 1, limit = 10, search = '', sort = 'id', order = 'asc' } = req.query;
-  
-  // Search products by name or description
-  let filteredProducts = products.filter(product => {
-    return product.name.toLowerCase().includes(search.toLowerCase()) || 
-           product.description.toLowerCase().includes(search.toLowerCase());
-  });
-
-  // Sorting
-  filteredProducts.sort((a, b) => {
-    if (order === 'asc') {
-      return a[sort] > b[sort] ? 1 : -1;
-    } else {
-      return a[sort] < b[sort] ? 1 : -1;
-    }
-  });
-
-  // Pagination
-  const totalItems = filteredProducts.length;
-  const totalPages = Math.ceil(totalItems / limit);
-  const startIndex = (page - 1) * limit;
-  const paginatedProducts = filteredProducts.slice(startIndex, startIndex + limit);
-
-  res.json({
-    products: paginatedProducts,
-    totalItems,
-    totalPages,
-    currentPage: parseInt(page)
-  });
+  res.json(products);
 });
 
 /**
